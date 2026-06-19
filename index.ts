@@ -13,6 +13,7 @@ import type {
 import {
 	AdminForthDataTypes,
 	AdminForthFilterOperators,
+	checkIfFieldIsInsideResourceColumns,
 	AdminForthSortDirections,
   AdminForthBaseConnector
 } from 'adminforth';
@@ -472,6 +473,10 @@ class QdrantConnector extends AdminForthBaseConnector implements IAdminForthData
 		sort: IAdminForthSort[];
 		filters: IAdminForthAndOrFilter;
 	}): Promise<any[]> {
+		if (sort.some(s => !checkIfFieldIsInsideResourceColumns(s.field, resource))) {
+			throw new Error(`Invalid sort field: ${sort.find(s => !checkIfFieldIsInsideResourceColumns(s.field, resource))?.field}`);
+		}
+
 		const directId = this.getSingleIdFilterValue(filters);
 		if (directId !== undefined) {
 			const records = await this.getDirectIdRecords(resource, directId, sort);

@@ -96,6 +96,11 @@ class QdrantConnector extends AdminForthBaseConnector implements IAdminForthData
 		return (collections.collections ?? []).map((collection: { name: string }) => collection.name);
 	}
 
+	async isDatabaseEmpty(): Promise<boolean> {
+		const collections = await this.client.getCollections();
+		return (collections.collections ?? []).length === 0;
+	}
+
   // discover fields 
 	async discoverFields(resource: AdminForthResource): Promise<{ [key: string]: AdminForthResourceColumn; }> {
 			return resource.columns.filter((col) => !col.virtual).reduce((acc, col) => {
